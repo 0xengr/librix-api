@@ -1,0 +1,25 @@
+# Build artifacts
+/bin/
+/dist/
+/api
+*.exe
+
+# Test and coverage output
+*.test
+*.out
+coverage.out
+
+# Environment files (keep the example)
+.env
+.env.*
+!.env.example
+
+# Editor / OS noise
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Go workspace files
+go.work
+go.work.sum
