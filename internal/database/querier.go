@@ -10,7 +10,7 @@ import (
 
 type Querier interface {
 	CreateBook(ctx context.Context, arg CreateBookParams) (Book, error)
-	DeleteBook(ctx context.Context, id int32) error
+	DeleteBook(ctx context.Context, id int32) (int32, error)
 	GetBook(ctx context.Context, id int32) (Book, error)
 	ListBooks(ctx context.Context) ([]Book, error)
 	UpdateBook(ctx context.Context, arg UpdateBookParams) (Book, error)
