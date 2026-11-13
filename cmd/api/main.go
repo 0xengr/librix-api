@@ -16,14 +16,6 @@ import (
 	"github.com/joho/godotenv"
 )
 
-func addBookRoutes(router *chi.Mux, bookHandler *api.BookHandler) {
-	router.Get("/books", bookHandler.FetchBooks)
-	router.Get("/books/{id}", bookHandler.FetchBookByID)
-	router.Post("/books", bookHandler.CreateBook)
-	router.Put("/books/{id}", bookHandler.UpdateBook)
-	router.Delete("/books/{id}", bookHandler.DeleteBook)
-}
-
 func main() {
 
 	_ = godotenv.Load()
@@ -69,7 +61,7 @@ func main() {
 		_, _ = w.Write([]byte("Hello world"))
 	})
 
-	addBookRoutes(r, bookHandler)
+	r.Mount("/api/v1", bookHandler.Routes())
 
 	slog.Info("server starting", "port", 3000)
 	log.Fatal(http.ListenAndServe(":3000", r))
