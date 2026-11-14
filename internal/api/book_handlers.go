@@ -15,12 +15,10 @@ import (
 	db "github.com/0xengr/librix-api/internal/database"
 )
 
-// Client-facing API messages.
+// Client-facing API messages specific to books.
 const (
-	msgInternalServerError = "internal server error"
-	msgInvalidRequestBody  = "invalid request body"
-	msgInvalidBookID       = "invalid book id"
-	msgBookNotFound        = "book not found"
+	msgInvalidBookID = "invalid book id"
+	msgBookNotFound  = "book not found"
 )
 
 // validation method
@@ -312,11 +310,11 @@ func (h *BookHandler) DeleteBook(w http.ResponseWriter, r *http.Request) {
 func (h *BookHandler) Routes() chi.Router {
 	r := chi.NewRouter()
 
-	r.Get("/books", h.FetchBooks)
-	r.Get("/books/{id}", h.FetchBookByID)
-	r.Post("/books", h.CreateBook)
-	r.Put("/books/{id}", h.UpdateBook)
-	r.Delete("/books/{id}", h.DeleteBook)
+	r.Get("/", h.FetchBooks)
+	r.Get("/{id}", h.FetchBookByID)
+	r.Post("/", h.CreateBook)
+	r.Put("/{id}", h.UpdateBook)
+	r.Delete("/{id}", h.DeleteBook)
 
 	return r
 }

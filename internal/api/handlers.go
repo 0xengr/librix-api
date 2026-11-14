@@ -7,6 +7,7 @@ import (
 	"strconv"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/jackc/pgx/v5/pgconn"
 
 	"github.com/0xengr/librix-api/internal/api/models"
 )
@@ -45,4 +46,11 @@ func parseID(r *http.Request) (int32, error) {
 	}
 
 	return int32(value), nil
+}
+
+// isUniqueViolation reports whether err is a Postgres unique constraint
+// violation (SQLSTATE 23505).
+func isUniqueViolation(err error) bool {
+	var pgErr *pgconn.PgError
+	return errors.As(err, &pgErr) && pgErr.Code == "23505"
 }

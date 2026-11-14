@@ -52,6 +52,7 @@ func main() {
 
 	queries := db.New(pool)
 	bookHandler := api.NewBookHandler(queries)
+	userHandler := api.NewUserHandler(queries)
 
 	// chi router
 	r := chi.NewRouter()
@@ -61,7 +62,8 @@ func main() {
 		_, _ = w.Write([]byte("Hello world"))
 	})
 
-	r.Mount("/api/v1", bookHandler.Routes())
+	r.Mount("/api/v1/books", bookHandler.Routes())
+	r.Mount("/api/v1/users", userHandler.Routes())
 
 	slog.Info("server starting", "port", 3000)
 	log.Fatal(http.ListenAndServe(":3000", r))

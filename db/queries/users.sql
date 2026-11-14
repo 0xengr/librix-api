@@ -17,10 +17,10 @@ ORDER BY id;
 
 -- name: UpdateUser :one
 UPDATE users
-SET name = $2,
-    email = $3,
+SET name       = COALESCE(sqlc.narg('name'), name),
+    email      = COALESCE(sqlc.narg('email'), email),
     updated_at = CURRENT_TIMESTAMP
-WHERE id = $1
+WHERE id = sqlc.arg('id')
 RETURNING *;
 
 -- name: DeleteUser :one
