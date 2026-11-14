@@ -6,8 +6,9 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/0xengr/librix-api/internal/api/models"
 	"github.com/go-chi/chi/v5"
+
+	"github.com/0xengr/librix-api/internal/api/models"
 )
 
 func writeJSON(w http.ResponseWriter, status int, data any) {
@@ -19,7 +20,7 @@ func writeJSON(w http.ResponseWriter, status int, data any) {
 	w.WriteHeader(status)
 
 	if data != nil {
-		json.NewEncoder(w).Encode(data)
+		_ = json.NewEncoder(w).Encode(data)
 	}
 
 }

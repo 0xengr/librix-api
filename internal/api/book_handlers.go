@@ -226,7 +226,7 @@ func (h *BookHandler) UpdateBook(w http.ResponseWriter, r *http.Request) {
 	}
 
 	params := db.UpdateBookParams{
-		ID:     int32(id),
+		ID:     id,
 		Title:  req.Title,
 		Author: req.Author,
 	}
