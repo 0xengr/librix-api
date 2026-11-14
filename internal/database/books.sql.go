@@ -12,9 +12,9 @@ import (
 )
 
 const createBook = `-- name: CreateBook :one
-INSERT INTO books(title, author, description, year_of_publication)
-VALUES($1, $2, $3, $4)
-RETURNING id, title, author, description, year_of_publication, created_at, updated_at
+INSERT INTO books (title, author, description, year_of_publication)
+VALUES ($1, $2, $3, $4)
+RETURNING id, title, author, description, year_of_publication, created_at, updated_at, available
 `
 
 type CreateBookParams struct {
@@ -40,6 +40,7 @@ func (q *Queries) CreateBook(ctx context.Context, arg CreateBookParams) (Book, e
 		&i.YearOfPublication,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.Available,
 	)
 	return i, err
 }
@@ -58,7 +59,7 @@ func (q *Queries) DeleteBook(ctx context.Context, id int32) (int32, error) {
 }
 
 const getBook = `-- name: GetBook :one
-SELECT id, title, author, description, year_of_publication, created_at, updated_at FROM books
+SELECT id, title, author, description, year_of_publication, created_at, updated_at, available FROM books
 WHERE id = $1
 `
 
@@ -73,12 +74,13 @@ func (q *Queries) GetBook(ctx context.Context, id int32) (Book, error) {
 		&i.YearOfPublication,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.Available,
 	)
 	return i, err
 }
 
 const listBooks = `-- name: ListBooks :many
-SELECT id, title, author, description, year_of_publication, created_at, updated_at FROM books
+SELECT id, title, author, description, year_of_publication, created_at, updated_at, available FROM books
 ORDER BY id
 `
 
@@ -99,6 +101,7 @@ func (q *Queries) ListBooks(ctx context.Context) ([]Book, error) {
 			&i.YearOfPublication,
 			&i.CreatedAt,
 			&i.UpdatedAt,
+			&i.Available,
 		); err != nil {
 			return nil, err
 		}
@@ -112,9 +115,13 @@ func (q *Queries) ListBooks(ctx context.Context) ([]Book, error) {
 
 const updateBook = `-- name: UpdateBook :one
 UPDATE books
-SET title = $2, author = $3, description = $4, year_of_publication = $5, updated_at = CURRENT_TIMESTAMP
+SET title = $2,
+    author = $3,
+    description = $4,
+    year_of_publication = $5,
+    updated_at = CURRENT_TIMESTAMP
 WHERE id = $1
-RETURNING id, title, author, description, year_of_publication, created_at, updated_at
+RETURNING id, title, author, description, year_of_publication, created_at, updated_at, available
 `
 
 type UpdateBookParams struct {
@@ -142,6 +149,7 @@ func (q *Queries) UpdateBook(ctx context.Context, arg UpdateBookParams) (Book, e
 		&i.YearOfPublication,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.Available,
 	)
 	return i, err
 }

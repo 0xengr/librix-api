@@ -9,11 +9,22 @@ import (
 )
 
 type Querier interface {
+	BorrowBook(ctx context.Context, arg BorrowBookParams) (BorrowedBook, error)
 	CreateBook(ctx context.Context, arg CreateBookParams) (Book, error)
+	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
 	DeleteBook(ctx context.Context, id int32) (int32, error)
+	DeleteUser(ctx context.Context, id int32) (int32, error)
 	GetBook(ctx context.Context, id int32) (Book, error)
+	GetOverDueBooks(ctx context.Context) ([]GetOverDueBooksRow, error)
+	GetUser(ctx context.Context, id int32) (User, error)
+	GetUserBorrowedBooks(ctx context.Context, userID int32) ([]GetUserBorrowedBooksRow, error)
+	GetUserByEmail(ctx context.Context, email string) (User, error)
 	ListBooks(ctx context.Context) ([]Book, error)
+	ListUsers(ctx context.Context) ([]User, error)
+	ReturnBook(ctx context.Context, arg ReturnBookParams) (BorrowedBook, error)
 	UpdateBook(ctx context.Context, arg UpdateBookParams) (Book, error)
+	UpdateBookAvailability(ctx context.Context, arg UpdateBookAvailabilityParams) error
+	UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error)
 }
 
 var _ Querier = (*Queries)(nil)

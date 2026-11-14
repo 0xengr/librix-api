@@ -16,4 +16,22 @@ type Book struct {
 	YearOfPublication pgtype.Int4        `json:"year_of_publication"`
 	CreatedAt         pgtype.Timestamptz `json:"created_at"`
 	UpdatedAt         pgtype.Timestamptz `json:"updated_at"`
+	Available         bool               `json:"available"`
+}
+
+type BorrowedBook struct {
+	ID         int32              `json:"id"`
+	BookID     int32              `json:"book_id"`
+	UserID     int32              `json:"user_id"`
+	BorrowedAt pgtype.Timestamptz `json:"borrowed_at"`
+	DueDate    pgtype.Timestamptz `json:"due_date"`
+	ReturnedAt pgtype.Timestamptz `json:"returned_at"`
+}
+
+type User struct {
+	ID        int32              `json:"id"`
+	Name      string             `json:"name"`
+	Email     string             `json:"email"`
+	CreatedAt pgtype.Timestamptz `json:"created_at"`
+	UpdatedAt pgtype.Timestamptz `json:"updated_at"`
 }
