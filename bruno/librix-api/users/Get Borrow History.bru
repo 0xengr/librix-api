@@ -1,0 +1,25 @@
+meta {
+  name: Get Borrow History
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{baseUrl}}/api/v1/users/{{userId}}/history
+  body: none
+  auth: none
+}
+
+assert {
+  res.status: eq 200
+}
+
+docs {
+  Returns the user's complete borrow history: active and returned loans,
+  newest first.
+
+  - 404 when the user does not exist.
+  - Each row includes the book title/author; `returned_at` is null while the
+    loan is still active.
+  - A user with no loans returns an empty array.
+}

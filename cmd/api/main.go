@@ -51,7 +51,7 @@ func main() {
 	}
 
 	queries := db.New(pool)
-	bookHandler := api.NewBookHandler(queries)
+	bookHandler := api.NewBookHandler(queries, pool)
 	userHandler := api.NewUserHandler(queries)
 
 	// chi router

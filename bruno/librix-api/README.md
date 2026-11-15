@@ -34,15 +34,17 @@ Environment variables (edit in `environments/local.bru`):
 | GET    | `/api/v1/users/{id}`                | —            | 200     |
 | PUT    | `/api/v1/users/{id}`                | JSON         | 200     |
 | DELETE | `/api/v1/users/{id}`                | —            | 204     |
+| GET    | `/api/v1/users/{id}/history`        | —            | 200     |
 
 ## Suggested order
 
 1. **Create User** → note the returned `id`, put it in `userId`.
 2. **Create Book** → note the returned `id`, put it in `bookId`.
 3. **Borrow Book** (marks the book unavailable).
-4. **Get User Borrowed Books** / **Get Overdue Books**.
+4. **Get User Borrowed Books** / **Get Borrow History** / **Get Overdue Books**.
 5. **Return Book** (marks the book available again).
-6. **Update / Delete** requests as needed.
+6. **Get Borrow History** again to see `returned_at` filled in.
+7. **Update / Delete** requests as needed.
 
 ## Notes
 
