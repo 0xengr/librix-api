@@ -1,0 +1,24 @@
+meta {
+  name: Get User Borrowed Books
+  type: http
+  seq: 7
+}
+
+get {
+  url: {{baseUrl}}/api/v1/books/user/{{userId}}/borrowed
+  body: none
+  auth: none
+}
+
+vars:pre-request {
+  userId: 1
+}
+
+assert {
+  res.status: eq 200
+}
+
+docs {
+  Lists the user's currently borrowed books (active loans only), newest first.
+  Returns an empty array when the user has no active loans.
+}

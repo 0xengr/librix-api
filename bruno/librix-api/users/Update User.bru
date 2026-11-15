@@ -1,0 +1,33 @@
+meta {
+  name: Update User
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{baseUrl}}/api/v1/users/{{userId}}
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "Ada L. Byron"
+  }
+}
+
+vars:pre-request {
+  userId: 1
+}
+
+assert {
+  res.status: eq 200
+}
+
+docs {
+  Partial update: send only the fields you want to change.
+  At least one of `name` or `email` is required.
+  
+  Change the body to update the email instead, for example:
+  { "email": "ada@newdomain.com" }
+}

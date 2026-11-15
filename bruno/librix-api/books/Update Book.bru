@@ -1,0 +1,34 @@
+meta {
+  name: Update Book
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{baseUrl}}/api/v1/books/{{bookId}}
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "title": "The Go Programming Language (2nd Edition)",
+    "author": "Alan A.A. Donovan and Brian W. Kernighan",
+    "description": "Updated description.",
+    "year_of_publication": 2015
+  }
+}
+
+vars:pre-request {
+  bookId: 7
+}
+
+assert {
+  res.status: eq 200
+}
+
+docs {
+  Replaces a book's fields. Both `title` and `author` are required.
+  The update always writes description and year_of_publication, so omitting
+  them ("" / 0) clears them to NULL.
+}

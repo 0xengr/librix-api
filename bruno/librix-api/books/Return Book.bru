@@ -1,0 +1,35 @@
+meta {
+  name: Return Book
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{baseUrl}}/api/v1/books/return
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "book_id": {{bookId}},
+    "user_id": {{userId}}
+  }
+}
+
+vars:pre-request {
+  userId: 1
+  bookId: 8
+}
+
+assert {
+  res.status: eq 200
+}
+
+docs {
+  Returns a borrowed book, closing its active loan and marking the book
+  available again.
+  
+  - 404 when there is no active borrow record for this book/user pair.
+  - `book_id` and `user_id` must be positive.
+}

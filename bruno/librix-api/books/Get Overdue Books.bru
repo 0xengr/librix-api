@@ -1,0 +1,21 @@
+meta {
+  name: Get Overdue Books
+  type: http
+  seq: 8
+}
+
+get {
+  url: {{baseUrl}}/api/v1/books/overdue
+  body: none
+  auth: none
+}
+
+assert {
+  res.status: eq 200
+}
+
+docs {
+  Lists active loans whose due_date is in the past, ordered by due date.
+  Includes book title/author and the borrower's name/email.
+  Returns an empty array when nothing is overdue.
+}

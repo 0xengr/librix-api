@@ -1,0 +1,24 @@
+meta {
+  name: Delete Book
+  type: http
+  seq: 9
+}
+
+delete {
+  url: {{baseUrl}}/api/v1/books/{{bookId}}
+  body: none
+  auth: none
+}
+
+vars:pre-request {
+  bookId: 6
+}
+
+assert {
+  res.status: eq 204
+}
+
+docs {
+  Deletes a book. 204 on success, 404 when it does not exist.
+  Note: borrowed_books rows are deleted by ON DELETE CASCADE.
+}

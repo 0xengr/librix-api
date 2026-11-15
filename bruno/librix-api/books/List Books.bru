@@ -1,0 +1,19 @@
+meta {
+  name: List Books
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/api/v1/books
+  body: none
+  auth: none
+}
+
+assert {
+  res.status: eq 200
+}
+
+docs {
+  Returns every book ordered by id, including its `available` flag.
+}

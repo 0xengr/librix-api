@@ -1,0 +1,23 @@
+meta {
+  name: Health Check
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/
+  body: none
+  auth: none
+}
+
+vars:pre-request {
+  baseUrl: http://localhost:3000
+}
+
+assert {
+  res.status: eq 200
+}
+
+docs {
+  Root route. Returns the plain text "Hello world" when the server is up.
+}

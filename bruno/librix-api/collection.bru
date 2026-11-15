@@ -1,0 +1,20 @@
+meta {
+  name: Librix API
+}
+
+auth {
+  mode: none
+}
+
+docs {
+  Librix API collection.
+
+  Start the API with `make run` (listens on :3000) and select the
+  `local` environment before sending requests.
+
+  Variables used by the requests:
+    baseUrl  - API origin (default http://localhost:3000)
+    bookId   - id of an existing book
+    userId   - id of an existing user
+    days     - loan length in days (0 = server default of 14)
+}

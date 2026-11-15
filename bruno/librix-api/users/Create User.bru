@@ -1,0 +1,27 @@
+meta {
+  name: Create User
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/api/v1/users
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "Ada Hatelace",
+    "email": "hatelace@example.com"
+  }
+}
+
+assert {
+  res.status: eq 201
+}
+
+docs {
+  Creates a user. Both `name` and `email` are required.
+  `email` must be valid and unique (duplicate -> 409).
+}

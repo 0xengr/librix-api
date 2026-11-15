@@ -1,0 +1,40 @@
+meta {
+  name: Borrow Book
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{baseUrl}}/api/v1/books/borrow
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "book_id": {{bookId}},
+    "user_id": {{userId}},
+    "days": {{days}}
+  }
+}
+
+vars:pre-request {
+  bookId: 8
+  userId: 1
+  days: 2
+}
+
+assert {
+  res.status: eq 200
+}
+
+docs {
+  Borrows a book for a user.
+  
+  - `book_id` and `user_id` must be positive.
+  - `days` must be >= 0; 0 means the default 14-day loan.
+  - 404 when the book or user does not exist.
+  - 409 when the book is already borrowed (available = false).
+  
+  On success the book is marked unavailable, so return it before borrowing again.
+}

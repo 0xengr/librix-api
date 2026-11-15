@@ -1,0 +1,23 @@
+meta {
+  name: Get User
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/api/v1/users/{{userId}}
+  body: none
+  auth: none
+}
+
+vars:pre-request {
+  userId: 1
+}
+
+assert {
+  res.status: eq 200
+}
+
+docs {
+  Fetches one user by id. 404 when the user does not exist.
+}
