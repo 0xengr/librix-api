@@ -4,4 +4,4 @@ CREATE UNIQUE INDEX idx_one_active_borrow_per_book
     WHERE returned_at IS NULL;
 
 -- +goose Down
-DROP TABLE IF EXISTS idx_one_active_borrow_per_book;
+DROP INDEX IF EXISTS idx_one_active_borrow_per_book;

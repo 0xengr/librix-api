@@ -60,6 +60,8 @@ type GetOverDueBooksRow struct {
 	Email      string             `json:"email"`
 }
 
+// GetOverDueBooks lists overdue active loans. Soft-deleted books are
+// intentionally included: an overdue copy still needs to be chased.
 func (q *Queries) GetOverDueBooks(ctx context.Context) ([]GetOverDueBooksRow, error) {
 	rows, err := q.db.Query(ctx, getOverDueBooks)
 	if err != nil {
@@ -159,6 +161,9 @@ type GetUserBorrowedBooksRow struct {
 	Author     string             `json:"author"`
 }
 
+// GetUserBorrowedBooks lists active loans. Soft-deleted books are intentionally
+// included: the borrower still holds the copy, so the loan must stay visible
+// and returnable until it is closed.
 func (q *Queries) GetUserBorrowedBooks(ctx context.Context, userID int32) ([]GetUserBorrowedBooksRow, error) {
 	rows, err := q.db.Query(ctx, getUserBorrowedBooks, userID)
 	if err != nil {

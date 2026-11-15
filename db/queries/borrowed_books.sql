@@ -11,6 +11,9 @@ WHERE book_id = $1
   AND returned_at IS NULL
 RETURNING *;
 
+-- GetUserBorrowedBooks lists active loans. Soft-deleted books are intentionally
+-- included: the borrower still holds the copy, so the loan must stay visible
+-- and returnable until it is closed.
 -- name: GetUserBorrowedBooks :many
 SELECT bb.*, b.title, b.author
 FROM borrowed_books bb
@@ -19,6 +22,8 @@ WHERE bb.user_id = $1
   AND bb.returned_at IS NULL
 ORDER BY bb.borrowed_at DESC;
 
+-- GetOverDueBooks lists overdue active loans. Soft-deleted books are
+-- intentionally included: an overdue copy still needs to be chased.
 -- name: GetOverDueBooks :many
 SELECT bb.*, b.title, b.author, u.name, u.email
 FROM borrowed_books bb

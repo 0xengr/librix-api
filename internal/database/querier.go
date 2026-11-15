@@ -15,10 +15,21 @@ type Querier interface {
 	DeleteBook(ctx context.Context, id int32) (int32, error)
 	DeleteUser(ctx context.Context, id int32) (int32, error)
 	GetBook(ctx context.Context, id int32) (Book, error)
+	// GetBookForUpdate locks a book for the borrow flow. Soft-deleted books cannot
+	// be borrowed, so they are excluded (and therefore not locked) here.
 	GetBookForUpdate(ctx context.Context, id int32) (Book, error)
+	// GetBookForUpdateIncludingDeleted locks a book for the return flow. A loan must
+	// stay returnable even if the book was soft-deleted after it was borrowed, so
+	// this query deliberately does not filter on deleted_at.
+	GetBookForUpdateIncludingDeleted(ctx context.Context, id int32) (Book, error)
+	// GetOverDueBooks lists overdue active loans. Soft-deleted books are
+	// intentionally included: an overdue copy still needs to be chased.
 	GetOverDueBooks(ctx context.Context) ([]GetOverDueBooksRow, error)
 	GetUser(ctx context.Context, id int32) (User, error)
 	GetUserBorrowHistory(ctx context.Context, userID int32) ([]GetUserBorrowHistoryRow, error)
+	// GetUserBorrowedBooks lists active loans. Soft-deleted books are intentionally
+	// included: the borrower still holds the copy, so the loan must stay visible
+	// and returnable until it is closed.
 	GetUserBorrowedBooks(ctx context.Context, userID int32) ([]GetUserBorrowedBooksRow, error)
 	GetUserByEmail(ctx context.Context, email string) (User, error)
 	ListBooks(ctx context.Context) ([]Book, error)

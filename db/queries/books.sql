@@ -29,7 +29,17 @@ WHERE id = $1 AND deleted_at IS NULL
 RETURNING id;
 
 
+-- GetBookForUpdate locks a book for the borrow flow. Soft-deleted books cannot
+-- be borrowed, so they are excluded (and therefore not locked) here.
 -- name: GetBookForUpdate :one
 SELECT * FROM books
 WHERE id = $1 AND deleted_at IS NULL
+FOR UPDATE;
+
+-- GetBookForUpdateIncludingDeleted locks a book for the return flow. A loan must
+-- stay returnable even if the book was soft-deleted after it was borrowed, so
+-- this query deliberately does not filter on deleted_at.
+-- name: GetBookForUpdateIncludingDeleted :one
+SELECT * FROM books
+WHERE id = $1
 FOR UPDATE;

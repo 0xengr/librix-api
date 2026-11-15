@@ -88,8 +88,36 @@ WHERE id = $1 AND deleted_at IS NULL
 FOR UPDATE
 `
 
+// GetBookForUpdate locks a book for the borrow flow. Soft-deleted books cannot
+// be borrowed, so they are excluded (and therefore not locked) here.
 func (q *Queries) GetBookForUpdate(ctx context.Context, id int32) (Book, error) {
 	row := q.db.QueryRow(ctx, getBookForUpdate, id)
+	var i Book
+	err := row.Scan(
+		&i.ID,
+		&i.Title,
+		&i.Author,
+		&i.Description,
+		&i.YearOfPublication,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.Available,
+		&i.DeletedAt,
+	)
+	return i, err
+}
+
+const getBookForUpdateIncludingDeleted = `-- name: GetBookForUpdateIncludingDeleted :one
+SELECT id, title, author, description, year_of_publication, created_at, updated_at, available, deleted_at FROM books
+WHERE id = $1
+FOR UPDATE
+`
+
+// GetBookForUpdateIncludingDeleted locks a book for the return flow. A loan must
+// stay returnable even if the book was soft-deleted after it was borrowed, so
+// this query deliberately does not filter on deleted_at.
+func (q *Queries) GetBookForUpdateIncludingDeleted(ctx context.Context, id int32) (Book, error) {
+	row := q.db.QueryRow(ctx, getBookForUpdateIncludingDeleted, id)
 	var i Book
 	err := row.Scan(
 		&i.ID,

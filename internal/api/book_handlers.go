@@ -19,8 +19,9 @@ import (
 
 // Client-facing API messages specific to books.
 const (
-	msgInvalidBookID = "invalid book id"
-	msgBookNotFound  = "book not found"
+	msgInvalidBookID    = "invalid book id"
+	msgBookNotFound     = "book not found"
+	msgBookNotAvailable = "book is not available for borrowing"
 )
 
 // validation method
@@ -458,7 +459,7 @@ func (h *BookHandler) BorrowBook(w http.ResponseWriter, r *http.Request) {
 		writeError(
 			w,
 			http.StatusConflict,
-			"book is not available for borrowing",
+			msgBookNotAvailable,
 		)
 		return
 	}
@@ -499,6 +500,19 @@ func (h *BookHandler) BorrowBook(w http.ResponseWriter, r *http.Request) {
 	})
 
 	if err != nil {
+		// The partial unique index on active loans rejects a second active loan
+		// for the same book. This is defence in depth behind the row lock above,
+		// so surface it as a conflict instead of a server error.
+		if isUniqueViolation(err) {
+			slog.Warn("book already has an active loan", "error", err)
+			writeError(
+				w,
+				http.StatusConflict,
+				msgBookNotAvailable,
+			)
+			return
+		}
+
 		slog.Error("failed to borrow book", "error", err)
 		writeError(
 			w,
@@ -587,8 +601,10 @@ func (h *BookHandler) ReturnBook(w http.ResponseWriter, r *http.Request) {
 
 	// Step 4: Lock the book row (SELECT ... FOR UPDATE). BorrowBook takes the
 	// same lock, so a borrow/return pair for one book cannot interleave.
+	// This lookup includes soft-deleted books: a loan must stay returnable even
+	// if the book was removed from the catalogue while it was out.
 	// No row means the book does not exist -> 404.
-	if _, err := qtx.GetBookForUpdate(r.Context(), req.BookID); err != nil {
+	if _, err := qtx.GetBookForUpdateIncludingDeleted(r.Context(), req.BookID); err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			slog.Error(msgBookNotFound, "error", err)
 			writeError(
