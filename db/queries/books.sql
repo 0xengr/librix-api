@@ -5,10 +5,11 @@ RETURNING *;
 
 -- name: GetBook :one
 SELECT * FROM books
-WHERE id = $1;
+WHERE id = $1 AND deleted_at IS NULL;
 
 -- name: ListBooks :many
 SELECT * FROM books
+WHERE deleted_at IS NULL
 ORDER BY id;
 
 -- name: UpdateBook :one
@@ -18,10 +19,17 @@ SET title = $2,
     description = $4,
     year_of_publication = $5,
     updated_at = CURRENT_TIMESTAMP
-WHERE id = $1
+WHERE id = $1 AND deleted_at IS NULL
 RETURNING *;
 
 -- name: DeleteBook :one
-DELETE FROM books
-WHERE id = $1
+UPDATE books
+SET deleted_at = CURRENT_TIMESTAMP
+WHERE id = $1 AND deleted_at IS NULL
 RETURNING id;
+
+
+-- name: GetBookForUpdate :one
+SELECT * FROM books
+WHERE id = $1 AND deleted_at IS NULL
+FOR UPDATE;

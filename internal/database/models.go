@@ -17,6 +17,7 @@ type Book struct {
 	CreatedAt         pgtype.Timestamptz `json:"created_at"`
 	UpdatedAt         pgtype.Timestamptz `json:"updated_at"`
 	Available         bool               `json:"available"`
+	DeletedAt         pgtype.Timestamptz `json:"deleted_at"`
 }
 
 type BorrowedBook struct {
@@ -34,4 +35,5 @@ type User struct {
 	Email     string             `json:"email"`
 	CreatedAt pgtype.Timestamptz `json:"created_at"`
 	UpdatedAt pgtype.Timestamptz `json:"updated_at"`
+	DeletedAt pgtype.Timestamptz `json:"deleted_at"`
 }

@@ -91,6 +91,54 @@ func (q *Queries) GetOverDueBooks(ctx context.Context) ([]GetOverDueBooksRow, er
 	return items, nil
 }
 
+const getUserBorrowHistory = `-- name: GetUserBorrowHistory :many
+SELECT bb.id, bb.book_id, bb.user_id, bb.borrowed_at, bb.due_date, bb.returned_at, b.title, b.author
+FROM borrowed_books bb
+    JOIN books b ON bb.book_id = b.id
+WHERE bb.user_id = $1
+ORDER BY bb.borrowed_at DESC
+`
+
+type GetUserBorrowHistoryRow struct {
+	ID         int32              `json:"id"`
+	BookID     int32              `json:"book_id"`
+	UserID     int32              `json:"user_id"`
+	BorrowedAt pgtype.Timestamptz `json:"borrowed_at"`
+	DueDate    pgtype.Timestamptz `json:"due_date"`
+	ReturnedAt pgtype.Timestamptz `json:"returned_at"`
+	Title      string             `json:"title"`
+	Author     string             `json:"author"`
+}
+
+func (q *Queries) GetUserBorrowHistory(ctx context.Context, userID int32) ([]GetUserBorrowHistoryRow, error) {
+	rows, err := q.db.Query(ctx, getUserBorrowHistory, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetUserBorrowHistoryRow
+	for rows.Next() {
+		var i GetUserBorrowHistoryRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.BookID,
+			&i.UserID,
+			&i.BorrowedAt,
+			&i.DueDate,
+			&i.ReturnedAt,
+			&i.Title,
+			&i.Author,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getUserBorrowedBooks = `-- name: GetUserBorrowedBooks :many
 SELECT bb.id, bb.book_id, bb.user_id, bb.borrowed_at, bb.due_date, bb.returned_at, b.title, b.author
 FROM borrowed_books bb

@@ -32,3 +32,11 @@ ORDER BY bb.due_date ASC;
 UPDATE books
 SET available = $2
 WHERE id = $1;
+
+
+-- name: GetUserBorrowHistory :many
+SELECT bb.*, b.title, b.author
+FROM borrowed_books bb
+    JOIN books b ON bb.book_id = b.id
+WHERE bb.user_id = $1
+ORDER BY bb.borrowed_at DESC;

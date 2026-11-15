@@ -14,7 +14,7 @@ import (
 const createBook = `-- name: CreateBook :one
 INSERT INTO books (title, author, description, year_of_publication)
 VALUES ($1, $2, $3, $4)
-RETURNING id, title, author, description, year_of_publication, created_at, updated_at, available
+RETURNING id, title, author, description, year_of_publication, created_at, updated_at, available, deleted_at
 `
 
 type CreateBookParams struct {
@@ -41,13 +41,15 @@ func (q *Queries) CreateBook(ctx context.Context, arg CreateBookParams) (Book, e
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.Available,
+		&i.DeletedAt,
 	)
 	return i, err
 }
 
 const deleteBook = `-- name: DeleteBook :one
-DELETE FROM books
-WHERE id = $1
+UPDATE books
+SET deleted_at = CURRENT_TIMESTAMP
+WHERE id = $1 AND deleted_at IS NULL
 RETURNING id
 `
 
@@ -59,8 +61,8 @@ func (q *Queries) DeleteBook(ctx context.Context, id int32) (int32, error) {
 }
 
 const getBook = `-- name: GetBook :one
-SELECT id, title, author, description, year_of_publication, created_at, updated_at, available FROM books
-WHERE id = $1
+SELECT id, title, author, description, year_of_publication, created_at, updated_at, available, deleted_at FROM books
+WHERE id = $1 AND deleted_at IS NULL
 `
 
 func (q *Queries) GetBook(ctx context.Context, id int32) (Book, error) {
@@ -75,12 +77,37 @@ func (q *Queries) GetBook(ctx context.Context, id int32) (Book, error) {
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.Available,
+		&i.DeletedAt,
+	)
+	return i, err
+}
+
+const getBookForUpdate = `-- name: GetBookForUpdate :one
+SELECT id, title, author, description, year_of_publication, created_at, updated_at, available, deleted_at FROM books
+WHERE id = $1 AND deleted_at IS NULL
+FOR UPDATE
+`
+
+func (q *Queries) GetBookForUpdate(ctx context.Context, id int32) (Book, error) {
+	row := q.db.QueryRow(ctx, getBookForUpdate, id)
+	var i Book
+	err := row.Scan(
+		&i.ID,
+		&i.Title,
+		&i.Author,
+		&i.Description,
+		&i.YearOfPublication,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.Available,
+		&i.DeletedAt,
 	)
 	return i, err
 }
 
 const listBooks = `-- name: ListBooks :many
-SELECT id, title, author, description, year_of_publication, created_at, updated_at, available FROM books
+SELECT id, title, author, description, year_of_publication, created_at, updated_at, available, deleted_at FROM books
+WHERE deleted_at IS NULL
 ORDER BY id
 `
 
@@ -102,6 +129,7 @@ func (q *Queries) ListBooks(ctx context.Context) ([]Book, error) {
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.Available,
+			&i.DeletedAt,
 		); err != nil {
 			return nil, err
 		}
@@ -120,8 +148,8 @@ SET title = $2,
     description = $4,
     year_of_publication = $5,
     updated_at = CURRENT_TIMESTAMP
-WHERE id = $1
-RETURNING id, title, author, description, year_of_publication, created_at, updated_at, available
+WHERE id = $1 AND deleted_at IS NULL
+RETURNING id, title, author, description, year_of_publication, created_at, updated_at, available, deleted_at
 `
 
 type UpdateBookParams struct {
@@ -150,6 +178,7 @@ func (q *Queries) UpdateBook(ctx context.Context, arg UpdateBookParams) (Book, e
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.Available,
+		&i.DeletedAt,
 	)
 	return i, err
 }
